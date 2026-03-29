@@ -15,6 +15,7 @@ def main():
     fonte = pygame.font.SysFont(None, 30)
     mensagem = ""
     tela = "jogador1_posicionando"
+    matriz = functions.criar_matriz()
     matriz_jogador1 = functions.criar_matriz()
     matriz_jogador2 = functions.criar_matriz()
     while True:
@@ -34,6 +35,7 @@ def main():
                     x,y = pygame.mouse.get_pos()
                     linha, coluna = functions.posição_celula(x,y)
                     functions.processar_clique(linha, coluna, matriz_jogador2)
+        
         if tela == "jogador1_posicionando":
             restante = functions.navios_restantes(matriz_jogador1)
             if restante == 0:
@@ -42,6 +44,8 @@ def main():
             restante = functions.navios_restantes(matriz_jogador2)
             if restante == 0:
                 tela = "jogando"
+        elif tela == "jogando":
+            pass
         screen.fill(constants.BRANCO)
         if tela == "jogador1_posicionando":
             functions.desenhar_matriz(screen, matriz_jogador1)
@@ -57,6 +61,13 @@ def main():
             functions.hover(hover_linha, hover_coluna, screen)
             mensagem = (f"Jogador 2, coloque seu navio. {restante} Restantes!")
             screen.blit(functions.texto(mensagem, fonte, constants.PRETO), (190, 30))
+        elif tela == "jogando":
+            screen.fill(constants.BRANCO)
+            mensagem = "Jogador 1, é sua vez de atacar!"
+            screen.blit(functions.texto(mensagem, fonte, constants.PRETO), (220, 30))
+            functions.desenhar_matriz(screen, matriz_jogador2)
+            functions.desenhar_matriz(screen, matriz)
+
             
                 
         clock.tick(60)
