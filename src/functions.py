@@ -31,9 +31,14 @@ def desenhar_matriz(screen, matriz):
                         x = constants.OFFSET_X + ((coluna + i) * constants.TAMANHO_CELULA)
                         y = constants.OFFSET_Y + ( linha * constants.TAMANHO_CELULA)
                         pygame.draw.rect(screen, cor, (x, y, constants.TAMANHO_CELULA, constants.TAMANHO_CELULA))
-                        pygame.draw.rect(screen, constants.PRETO, (x, y, constants.TAMANHO_CELULA, constants.TAMANHO_CELULA), 1)            
+                        pygame.draw.rect(screen, constants.PRETO, (x, y, constants.TAMANHO_CELULA, constants.TAMANHO_CELULA), 1)
+                elif estado == 2:
+                    cor = constants.PRETO
+                    pygame.draw.rect(screen, cor, (x, y, constants.TAMANHO_CELULA, constants.TAMANHO_CELULA))
+                    pygame.draw.rect(screen, constants.PRETO, (x, y, constants.TAMANHO_CELULA, constants.TAMANHO_CELULA), 1)            
             pygame.draw.rect(screen,cor,(x,y, constants.TAMANHO_CELULA , constants.TAMANHO_CELULA))
             pygame.draw.rect(screen, constants.PRETO, (x, y, constants.TAMANHO_CELULA, constants.TAMANHO_CELULA), 1)
+
 def posição_celula(pos_x, pos_y,):
     if (constants.OFFSET_X <= pos_x <= (constants.OFFSET_X + (constants.TAMANHO_CELULA * 10)) and 
         constants.OFFSET_Y <= pos_y <= (constants.OFFSET_Y + (constants.TAMANHO_CELULA * 10))):
