@@ -8,7 +8,7 @@ from sys import exit
 def main():
 
     pygame.init()
-
+    
     screen = pygame.display.set_mode((constants.LARGURA_TELA, constants.ALTURA_TELA))
     pygame.display.set_caption("Batalha naval !")
     clock = pygame.time.Clock()
@@ -22,6 +22,7 @@ def main():
     jogador_atual = 1
 
     while True:
+        
         for event in pygame.event.get():
             if event.type == QUIT:
                 pygame.quit()
@@ -64,8 +65,8 @@ def main():
             restante = functions.navios_restantes(matriz_jogador2)
             if restante == 0:
                 tela = "jogando"
-        
         screen.fill(constants.BRANCO)
+        screen.blit(constants.redimensionada, (0, 0))
         if tela == "jogador1_posicionando":
             functions.desenhar_matriz(screen, matriz_jogador1)
             x,y = pygame.mouse.get_pos()

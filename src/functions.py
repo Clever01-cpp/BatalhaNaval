@@ -14,30 +14,31 @@ def criar_matriz():
         matriz.append(linha_percorrida)
     return matriz
 def desenhar_matriz(screen, matriz):
-    for linha in range(len(matriz)):
-        for coluna in range(len(matriz[0])):
-            x = constants.OFFSET_X + ((coluna * constants.TAMANHO_CELULA))
-            y = constants.OFFSET_Y + (linha * constants.TAMANHO_CELULA) 
+    partes_sub = [constants.sub1_redim, constants.sub2_redim, constants.sub3_redim]
 
+    for linha in range(len(matriz)):
+        
+        for coluna in range(len(matriz[0])):
+           
             estado = matriz[linha][coluna]
-            if linha is not None and coluna is not None:
-                if estado == 0:
-                    cor = constants.AZUL_MARINHO
-                elif estado == 1:
-                    if coluna + 2 >= 10:
-                        continue
-                    cor = constants.AZUL_CLARO
-                    for i in range(3):  
-                        x = constants.OFFSET_X + ((coluna + i) * constants.TAMANHO_CELULA)
-                        y = constants.OFFSET_Y + ( linha * constants.TAMANHO_CELULA)
-                        pygame.draw.rect(screen, cor, (x, y, constants.TAMANHO_CELULA, constants.TAMANHO_CELULA))
-                        pygame.draw.rect(screen, constants.PRETO, (x, y, constants.TAMANHO_CELULA, constants.TAMANHO_CELULA), 1)
-                elif estado == 2:
-                    cor = constants.PRETO
-                    pygame.draw.rect(screen, cor, (x, y, constants.TAMANHO_CELULA, constants.TAMANHO_CELULA))
-                    pygame.draw.rect(screen, constants.PRETO, (x, y, constants.TAMANHO_CELULA, constants.TAMANHO_CELULA), 1)            
-            pygame.draw.rect(screen,cor,(x,y, constants.TAMANHO_CELULA , constants.TAMANHO_CELULA))
-            pygame.draw.rect(screen, constants.PRETO, (x, y, constants.TAMANHO_CELULA, constants.TAMANHO_CELULA), 1)
+            if estado == 0:
+                x = constants.OFFSET_X + (coluna * constants.TAMANHO_CELULA)
+                y = constants.OFFSET_Y + (linha * constants.TAMANHO_CELULA)
+                screen.blit(constants.celula_redim, (x, y))
+            if estado == 1 and (coluna == 0 or matriz[linha][coluna - 1] != 1):
+                if coluna + 2 >= 10:
+                    continue
+                for i in range(3):  
+                    x_sub = constants.OFFSET_X + ((coluna + i) * constants.TAMANHO_CELULA)
+                    y_sub = constants.OFFSET_Y + ( linha * constants.TAMANHO_CELULA)
+                    screen.blit(partes_sub[i], (x_sub, y_sub))
+                    
+                pygame.draw.rect(screen, constants.PRETO, (x, y, constants.TAMANHO_CELULA * 3, constants.TAMANHO_CELULA), 1)   
+            
+    
+                                       
+            
+            
 
 def posição_celula(pos_x, pos_y,):
     if (constants.OFFSET_X <= pos_x <= (constants.OFFSET_X + (constants.TAMANHO_CELULA * 10)) and 
