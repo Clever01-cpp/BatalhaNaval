@@ -1,5 +1,4 @@
 from src import functions
-#Configurações da tela
 import pygame
 from pygame.locals import *
 
@@ -9,31 +8,15 @@ TAMANHO_CELULA = 50
 OFFSET_X = 150
 OFFSET_Y = 80
 
-#cores (RGB)
+
 
 BRANCO = (255,255,255)
 PRETO = (0,0,0)
-AMARELO = (255,255,0)
-ROXO = (255,0,255)
-CINZA_CLARO = (224,224,224)
-AZUL_MARINHO = (51,51,255)
-AZUL_CLARO = (51,255,255)
 navios_jogador1 = 7
 navios_jogador2 = 7
-#estados do jogo
-ESTADO_POSICIONANDO = 0 # tela de posicionamento de navios
-ESTADO_JOGANDO = 1 # jogo acontecendo
-ESTADO_FIM = 2 #Jogo encerrado, alguem ganhou
 
 
-#estados da célula
 
-AGUA = 0 #AGUA NÃO ATACADA
-NAVIO = 1 #NAVIO NAO ATACADO
-AGUA_ATACADA = 2 #TIRO NA AGUA
-NAVIO_ATACADO = 3 #TIRO CERTO
-
-# imagens do jogo
 tela_jogo = pygame.image.load("assets/Tela_jogo.png")
 redimensionada = pygame.transform.scale(tela_jogo, (LARGURA_TELA, ALTURA_TELA))
 celula_agua = pygame.image.load("assets/celula_agua.png")  
@@ -46,7 +29,18 @@ sub2 = pygame.image.load("assets/submarino_2.png")
 sub2_redim = pygame.transform.scale(sub2, (TAMANHO_CELULA, TAMANHO_CELULA))     
 sub3 = pygame.image.load("assets/submarino_3.png")
 sub3_redim = pygame.transform.scale(sub3, (TAMANHO_CELULA, TAMANHO_CELULA))
+tiro_sub = pygame.image.load("assets/tiro_sub.png")
+tiro_sub_redim = pygame.transform.scale(tiro_sub, (TAMANHO_CELULA, TAMANHO_CELULA))
+tiro_agua = pygame.image.load("assets/tiro_agua.png")   
+tiro_agua_redim = pygame.transform.scale(tiro_agua, (TAMANHO_CELULA, TAMANHO_CELULA))       
 
 
-TURNO_PLAYER1 = True
-TURNO_PLAYER2 = False
+pygame.mixer.init()
+efeito_sonoro_tiro = pygame.mixer.Sound("assets/efeito_tiro_navio.wav")
+efeito_sonoro_agua = pygame.mixer.Sound("assets/efeito_tiro_agua.wav")
+colocando_navio = pygame.mixer.Sound("assets/colocando_navio.wav")
+som_erro = pygame.mixer.Sound("assets/som_erro.wav")
+pygame.mixer.music.set_volume(0.5)  
+
+ 
+

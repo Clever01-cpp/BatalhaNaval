@@ -25,21 +25,21 @@ def desenhar_matriz(screen, matriz):
                 x = constants.OFFSET_X + (coluna * constants.TAMANHO_CELULA)
                 y = constants.OFFSET_Y + (linha * constants.TAMANHO_CELULA)
                 screen.blit(constants.celula_redim, (x, y))
-            if estado == 1 and (coluna == 0 or matriz[linha][coluna - 1] != 1):
-                if coluna + 2 >= 10:
-                    continue
-                for i in range(3):  
-                    x_sub = constants.OFFSET_X + ((coluna + i) * constants.TAMANHO_CELULA)
-                    y_sub = constants.OFFSET_Y + ( linha * constants.TAMANHO_CELULA)
-                    screen.blit(partes_sub[i], (x_sub, y_sub))
-                    
-                pygame.draw.rect(screen, constants.PRETO, (x, y, constants.TAMANHO_CELULA * 3, constants.TAMANHO_CELULA), 1)   
-            
-    
-                                       
-            
-            
-
+            elif estado == 1 and (coluna == 0 or matriz[linha][coluna - 1] != 1):
+                if coluna + 2 < 10:
+                    for i in range(3):   
+                        x_sub = constants.OFFSET_X + ((coluna + i) * constants.TAMANHO_CELULA)
+                        y_sub = constants.OFFSET_Y + ( linha * constants.TAMANHO_CELULA)
+                        screen.blit(partes_sub[i], (x_sub, y_sub))
+                        
+            elif estado == 2:
+                x_tiro_sub = constants.OFFSET_X + (coluna * constants.TAMANHO_CELULA)
+                y_tiro_sub = constants.OFFSET_Y + (linha * constants.TAMANHO_CELULA)
+                screen.blit(constants.tiro_sub_redim, (x_tiro_sub, y_tiro_sub))
+            elif estado == 3:
+                x_tiro_agua = constants.OFFSET_X + (coluna * constants.TAMANHO_CELULA)
+                y_tiro_agua = constants.OFFSET_Y + (linha * constants.TAMANHO_CELULA)
+                screen.blit(constants.tiro_agua_redim, (x_tiro_agua, y_tiro_agua))                  
 def posição_celula(pos_x, pos_y,):
     if (constants.OFFSET_X <= pos_x <= (constants.OFFSET_X + (constants.TAMANHO_CELULA * 10)) and 
         constants.OFFSET_Y <= pos_y <= (constants.OFFSET_Y + (constants.TAMANHO_CELULA * 10))):
@@ -51,29 +51,45 @@ def posição_celula(pos_x, pos_y,):
 def processar_clique(linha, coluna, matriz):
     if linha is None or coluna is None:
         return
-    if coluna + 2 >= 10:
+    elif coluna + 2 >= 10:
         print("Posição inválida para o navio. Tente novamente.")
+        constants.som_erro.play()
         return
-    if not sobreposição(linha, coluna, matriz):
-        print("Sobreposição detectada. Tente novamente.")
+    elif not sobreposição(linha, coluna, matriz):
+        print("Navios não podem estar adjacentes ou sobrepostos. Tente novamente.")
+        constants.som_erro.play()
         return
-    estado_atual = matriz[linha][coluna]
-    if linha is not None and coluna is not None and coluna + 2 <= 10:
+    elif coluna + 2 <= 10:
+        constants.colocando_navio.play()
         for i in range(3):
              matriz[linha][coluna + i] = 1    
 def hover(hover_linha, hover_coluna, screen):
     if hover_linha is not None and hover_coluna is not None and hover_coluna + 2 < 10:
-        cor =  constants.CINZA_CLARO
-        for i in range(3):  
-            x = constants.OFFSET_X + ((hover_coluna + i) * constants.TAMANHO_CELULA)
-            y = constants.OFFSET_Y + (hover_linha * constants.TAMANHO_CELULA)
-            pygame.draw.rect(screen, cor, (x, y, constants.TAMANHO_CELULA, constants.TAMANHO_CELULA))
-            pygame.draw.rect(screen, constants.PRETO, (x, y, constants.TAMANHO_CELULA, constants.TAMANHO_CELULA), 1) 
+        x_hover = constants.OFFSET_X + ((hover_coluna) * constants.TAMANHO_CELULA)
+        y_hover = constants.OFFSET_Y + (hover_linha * constants.TAMANHO_CELULA)
+        screen.blit(constants.sub_completo_redim, (x_hover, y_hover))     
 def sobreposição(linha, coluna, matriz):
+
+    tamanho = len(matriz)
     for i in range(3):
-        if matriz[linha][coluna + i] == 1:
+        if coluna + i >= tamanho:
             return False
-    return True           
+        if matriz[linha][coluna + i] != 0:
+            return False
+    for i in range(-1, 2):
+        for j in range(-1, 4):
+
+            nova_linha = linha + i
+            nova_coluna = coluna + j
+
+            if 0 <= nova_linha < tamanho and 0 <= nova_coluna < tamanho:
+
+              
+                if nova_linha == linha and coluna <= nova_coluna <= coluna + 2:
+                    continue
+                if matriz[nova_linha][nova_coluna] == 1:
+                    return False
+    return True 
 def texto(mensagem, fonte, cor):
     texto_renderizado = fonte.render(mensagem, True, cor)
     return texto_renderizado
@@ -81,3 +97,117 @@ def navios_restantes(matriz):
     navios_colocados = sum(row.count(1) for row in matriz) // 3
     navios_totais = constants.navios_jogador1
     return navios_totais - navios_colocados
+def turnos_jogadores(tela, matriz, matriz_jogador1, matriz_jogador2, matriz_ataque_j1, matriz_ataque_j2, jogador_atual):
+                x, y = pygame.mouse.get_pos()
+                linha, coluna = posição_celula(x, y)
+                if linha is None or coluna is None:
+                    return jogador_atual
+                if tela == "jogador1_posicionando":
+                    processar_clique(linha, coluna, matriz_jogador1)
+                if tela == "jogador2_posicionando":
+                    processar_clique(linha, coluna, matriz_jogador2)
+                if tela == "jogando":
+                    if jogador_atual == 1:
+                        if matriz_ataque_j1[linha][coluna] != 0:
+                            print("Você já atirou nessa posição. Tente novamente.")
+                            return jogador_atual
+                        if matriz_jogador2[linha][coluna] == 1:
+                            matriz_jogador2[linha][coluna] = 2
+                            matriz_ataque_j1[linha][coluna] = 2
+                            matriz[linha][coluna] = 2
+                            print("Acertou o jogador 2!")
+                            constants.efeito_sonoro_tiro.play()
+                        else:
+                            matriz_ataque_j1[linha][coluna] = 3
+                            matriz[linha][coluna] = 3
+                            print("Errou o tiro!")
+                            jogador_atual = 2
+                            constants.efeito_sonoro_agua.play()
+                    elif jogador_atual == 2:
+                        if matriz_ataque_j2[linha][coluna] != 0:
+                            print("Você já atirou nessa posição. Tente novamente.")
+                            return jogador_atual
+                        if matriz_jogador1[linha][coluna] == 1:
+                            matriz_jogador1[linha][coluna] = 2
+                            matriz_ataque_j2[linha][coluna] = 2
+                            matriz[linha][coluna] = 2
+                            print("Acertou o jogador 1!")
+                            constants.efeito_sonoro_tiro.play()
+                        else:
+                            matriz_ataque_j2[linha][coluna] = 3
+                            matriz[linha][coluna] = 3
+                            print("Errou o tiro!")
+                            jogador_atual = 1
+                            constants.efeito_sonoro_agua.play()
+                return jogador_atual
+def main():
+
+    pygame.init()
+
+
+    screen = pygame.display.set_mode((constants.LARGURA_TELA, constants.ALTURA_TELA))
+    pygame.display.set_caption("Batalha naval !")
+    clock = pygame.time.Clock()
+    fonte = pygame.font.SysFont(None, 30)
+    mensagem = ""
+    tela = "jogador1_posicionando"
+    matriz = criar_matriz()
+    matriz_ataque_j1 = criar_matriz()
+    matriz_ataque_j2 = criar_matriz()
+    matriz_jogador1 = criar_matriz()
+    matriz_jogador2 = criar_matriz()
+    jogador_atual = 1
+
+    print(matriz)
+
+    while True:
+        
+        #constants.musica_fundo.play(-1)  
+        for event in pygame.event.get():
+            x,y = pygame.mouse.get_pos()
+            if event.type == QUIT:
+                pygame.quit()
+                exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                jogador_atual = turnos_jogadores(tela, matriz, matriz_jogador1, matriz_jogador2, matriz_ataque_j1, matriz_ataque_j2, jogador_atual)
+        if tela == "jogador1_posicionando":
+            restante = navios_restantes(matriz_jogador1)
+            if restante == 0:
+                tela = "jogador2_posicionando"
+        elif tela == "jogador2_posicionando":
+            restante = navios_restantes(matriz_jogador2)
+            if restante == 0:
+                tela = "jogando"
+        screen.fill(constants.BRANCO)
+        screen.blit(constants.redimensionada, (0, 0))
+        if tela == "jogador1_posicionando":
+            desenhar_matriz(screen, matriz_jogador1)
+            hover_linha, hover_coluna = posição_celula(x,y)
+            hover(hover_linha, hover_coluna, screen)
+            mensagem = (f"Jogador 1, coloque seu navio. {restante} Restantes!")
+            screen.blit(texto(mensagem, fonte, constants.PRETO), (190, 30)) 
+        elif tela == "jogador2_posicionando":
+            desenhar_matriz(screen, matriz_jogador2)
+            hover_linha, hover_coluna = posição_celula(x,y)
+            hover(hover_linha, hover_coluna, screen)
+            mensagem = (f"Jogador 2, coloque seu navio. {restante} Restantes!")
+            screen.blit(texto(mensagem, fonte, constants.PRETO), (190, 30))
+        elif tela == "jogando":
+            if jogador_atual == 1:
+                mensagem = "Jogador 1, é sua vez de atacar!"
+                desenhar_matriz(screen, matriz_ataque_j1)
+            else:
+                mensagem = "Jogador 2, é sua vez de atacar!"
+                desenhar_matriz(screen, matriz_ataque_j2)
+
+            screen.blit(texto(mensagem, fonte, constants.PRETO), (220, 30))
+    
+        clock.tick(60)
+        pygame.display.update()
+       
+
+        
+
+
+
+
