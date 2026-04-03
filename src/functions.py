@@ -99,6 +99,8 @@ def navios_restantes(matriz):
     navios_colocados = sum(row.count(1) for row in matriz) // 3
     navios_totais = constants.navios_jogador1
     return navios_totais - navios_colocados
+def partes_restantes(matriz):
+    return sum(row.count(1) for row in matriz)
 def turnos_jogadores(tela, matriz, matriz_jogador1, matriz_jogador2, matriz_ataque_j1, matriz_ataque_j2, jogador_atual, linha, coluna):
                 
                 if linha is None or coluna is None:
@@ -119,6 +121,12 @@ def turnos_jogadores(tela, matriz, matriz_jogador1, matriz_jogador2, matriz_ataq
                             matriz[linha][coluna] = 2
                             msg = "Acertou! Continue atacando!"
                             constants.efeito_sonoro_tiro.play()
+                            if partes_restantes(matriz_jogador2) == 0:
+                                msg = "Parabéns, jogador 1! Você venceu a partida!"
+                                pygame.mixer.music.stop()
+                                constants.som_vitoria.play()
+                                tela = "fim_de_jogo"
+                                return jogador_atual, msg, jogador_atual, False
                             return jogador_atual, msg, jogador_atual, False
                         else:
                             matriz_ataque_j1[linha][coluna] = 3
@@ -138,6 +146,12 @@ def turnos_jogadores(tela, matriz, matriz_jogador1, matriz_jogador2, matriz_ataq
                             matriz[linha][coluna] = 2
                             msg = "Acertou! Continue atacando!"
                             constants.efeito_sonoro_tiro.play()
+                            if partes_restantes(matriz_jogador1) == 0:
+                                msg = "Parabéns, jogador 2! Você venceu a partida!"
+                                pygame.mixer.music.stop()
+                                constants.som_vitoria.play()
+                                tela = "fim_de_jogo"
+                                return jogador_atual, msg, jogador_atual, False
                             return jogador_atual, msg, jogador_atual, False
                         else:
                             matriz_ataque_j2[linha][coluna] = 3
@@ -179,8 +193,7 @@ def posicionar_navios(matriz_jogador1, matriz_jogador2, tela, screen, fonte, x, 
         if msg:
             screen.blit(constants.caixa_dialogo_redim2, (10, 587))
             screen.blit(texto(msg, fonte, constants.BRANCO), (50, 599)) 
-    
-    if tela == "jogando":
+    elif tela == "jogando":
         if jogador_atual == 1:
             mensagem = "Jogador 1: sua vez de atacar!"
             desenhar_matriz(screen, matriz_ataque_j1)
@@ -195,6 +208,27 @@ def posicionar_navios(matriz_jogador1, matriz_jogador2, tela, screen, fonte, x, 
                 screen.blit(texto(msg, fonte, constants.BRANCO), (50, 599))
         screen.blit(constants.caixa_dialogo_redim, (100, 20))
         screen.blit(texto(mensagem, fonte, constants.BRANCO), (constants.OFFSET_X, 30))
+    elif tela == "fim_de_jogo":
+        screen.fill(constants.BRANCO)
+        screen.blit(constants.redimensionada, (0, 0))
+        if jogador_atual == 1:
+            if msg:
+                screen.blit(constants.caixa_dialogo_redim2, (10, 587))
+                screen.blit(texto(msg, fonte, constants.BRANCO), (50, 599))
+                desenhar_matriz(screen, matriz_ataque_j1)
+            msg = "Esses são os navios do jogador 2 que voce acertou!"
+            screen.blit(constants.caixa_dialogo_redim2, (10, 20))
+            screen.blit(texto(msg, fonte, constants.BRANCO), (50, 30))           
+        else:
+            if msg:
+                screen.blit(constants.caixa_dialogo_redim2, (10, 587))
+                screen.blit(texto(msg, fonte, constants.BRANCO), (50, 599))
+                desenhar_matriz(screen, matriz_ataque_j1)
+                
+            msg = "Esses são os navios do jogador 2 que voce acertou!"
+            screen.blit(constants.caixa_dialogo_redim2, (10, 20))
+            screen.blit(texto(msg, fonte, constants.BRANCO), (50, 30))
+            
             
     return tela   
 def main():
@@ -220,6 +254,7 @@ def main():
     tempo_espera = 0
     duração_espera = 2000
     proximo_jogador = jogador_atual
+    fim_de_jogo = False
 
     print(matriz)
 
@@ -231,7 +266,7 @@ def main():
             if event.type == QUIT:
                 pygame.quit()
                 exit()
-            if event.type == pygame.MOUSEBUTTONDOWN and not esperando_turno:
+            if event.type == pygame.MOUSEBUTTONDOWN and not esperando_turno and tela != "fim_de_jogo":
                 x,y = pygame.mouse.get_pos()
                 linha, coluna = posição_celula(x, y)
                 jogador_atual, nova_msg, prox_jogador, esperando = turnos_jogadores(tela, matriz, matriz_jogador1, matriz_jogador2, matriz_ataque_j1, matriz_ataque_j2, jogador_atual, linha, coluna)
@@ -239,17 +274,23 @@ def main():
                 if nova_msg:
                     msg = nova_msg  
                     tempo_msg = pygame.time.get_ticks()
+                    if "venceu" in msg:
+                        tela = "fim_de_jogo"
+                        fim_de_jogo = True
+                        continue
                 if esperando:
                     esperando_turno = True
                     tempo_espera = pygame.time.get_ticks()
                     proximo_jogador = prox_jogador
                 
         tempo_atual = pygame.time.get_ticks()
-        if esperando_turno and tempo_atual - tempo_espera > duração_espera:
+        if esperando_turno and not fim_de_jogo and tempo_atual - tempo_espera > duração_espera:
             jogador_atual = proximo_jogador
             esperando_turno = False  
-        if msg and tempo_atual - tempo_msg >= duracao_msg:
-            msg = None       
+        if msg and tempo_atual - tempo_msg >= duracao_msg and not fim_de_jogo:
+            msg = None
+        
+    
         tela = posicionar_navios(matriz_jogador1, matriz_jogador2, tela, screen, fonte, x, y, jogador_atual, matriz_ataque_j1, matriz_ataque_j2, matriz, msg)
         
 

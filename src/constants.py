@@ -34,6 +34,7 @@ efeito_sonoro_tiro = pygame.mixer.Sound("assets/sons_e_efeitos/efeito_tiro_navio
 efeito_sonoro_agua = pygame.mixer.Sound("assets/sons_e_efeitos/efeito_tiro_agua.wav")
 colocando_navio = pygame.mixer.Sound("assets/sons_e_efeitos/colocando_navio.wav")
 som_erro = pygame.mixer.Sound("assets/sons_e_efeitos/som_erro.wav")
+som_vitoria = pygame.mixer.Sound("assets/sons_e_efeitos/som_vitoria.wav")
 pygame.mixer.music.set_volume(0.5)  
 
  
