@@ -16,8 +16,9 @@ navios_jogador1 = 7
 navios_jogador2 = 7
 
 
-
-redimensionada = pygame.transform.scale(pygame.image.load("assets/imagens/Tela_jogo.png"), (LARGURA_TELA, ALTURA_TELA))
+tela_inicio_redim = pygame.transform.scale(pygame.image.load("assets/imagens/tela_inicio.png"), (LARGURA_TELA, ALTURA_TELA))
+tela_jogo_redim = pygame.transform.scale(pygame.image.load("assets/imagens/tela_jogo.png"), (LARGURA_TELA, ALTURA_TELA))
+tela_vitoria_redim = pygame.transform.scale(pygame.image.load("assets/imagens/tela_vitoria.png"), (LARGURA_TELA, ALTURA_TELA))
 celula_redim = pygame.transform.scale(pygame.image.load("assets/imagens/celula_agua.png"), (TAMANHO_CELULA, TAMANHO_CELULA))
 sub_completo_redim = pygame.transform.scale(pygame.image.load("assets/imagens/submarino_completo.png"), (TAMANHO_CELULA * 3, TAMANHO_CELULA))
 sub1_redim = pygame.transform.scale(pygame.image.load("assets/imagens/submarino_1.png"), (TAMANHO_CELULA, TAMANHO_CELULA))  
@@ -27,15 +28,17 @@ tiro_sub_redim = pygame.transform.scale(pygame.image.load("assets/imagens/tiro_s
 tiro_agua_redim = pygame.transform.scale(pygame.image.load("assets/imagens/tiro_agua.png"), (TAMANHO_CELULA, TAMANHO_CELULA))       
 caixa_dialogo_redim = pygame.transform.scale(pygame.image.load("assets/imagens/caixa_dialogo_ret.png"), (600, 55))
 caixa_dialogo_redim2 = pygame.transform.scale(pygame.image.load("assets/imagens/caixa_dialogo_ret.png"), (780, 55))
-
+caixa_quad = pygame.transform.scale(pygame.image.load("assets/imagens/caixa_quad.png"), (TAMANHO_CELULA * 3, TAMANHO_CELULA * 5))
 
 pygame.mixer.init()
 efeito_sonoro_tiro = pygame.mixer.Sound("assets/sons_e_efeitos/efeito_tiro_navio.wav")
+efeito_sonoro_tiro.set_volume(0.6)
 efeito_sonoro_agua = pygame.mixer.Sound("assets/sons_e_efeitos/efeito_tiro_agua.wav")
+efeito_sonoro_agua.set_volume(0.8)
 colocando_navio = pygame.mixer.Sound("assets/sons_e_efeitos/colocando_navio.wav")
 som_erro = pygame.mixer.Sound("assets/sons_e_efeitos/som_erro.wav")
 som_vitoria = pygame.mixer.Sound("assets/sons_e_efeitos/som_vitoria.wav")
-pygame.mixer.music.set_volume(0.5)  
+som_vitoria.set_volume(1.0)
 
  
 
